@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAc
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
-import second
+import second, RegForm, sqlite3, Employee
 
 
 class App(QMainWindow):
@@ -29,7 +29,7 @@ class MyTableWidget(QWidget):
 
         # Initialize tab screen
         self.tabs = QTabWidget()
-        self.tab1 = StaffWidget()
+        self.tab1 = HotelWidget()
         self.tab2 = EmployeeWidget()
         self.tab3 = RegionWidget()
         self.tab4 = JobWidget()
@@ -46,7 +46,7 @@ class MyTableWidget(QWidget):
         self.setLayout(self.layout)
 
 
-class StaffWidget(QWidget):
+class HotelWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -72,10 +72,14 @@ class StaffWidget(QWidget):
         view.move(10, 10)
         view.resize(617, 315)
         self.layout = QVBoxLayout(self)
-        self.pushButton1 = QPushButton("Add")
         self.layout.addWidget(view)
-        self.layout.addWidget(self.pushButton1)
         self.setLayout(self.layout)
+        self.pushButton1 = QPushButton("Добавить")
+        self.layout.addWidget(self.pushButton1)
+        self.pushButton2 = QPushButton("Изменить")
+        self.layout.addWidget(self.pushButton2)
+        self.pushButton3 = QPushButton("Удалить")
+        self.layout.addWidget(self.pushButton3)
 
 
 class EmployeeWidget(QWidget):
@@ -90,24 +94,52 @@ class EmployeeWidget(QWidget):
         # И откроем подключение
         db.open()
 
-        view = QTableView(self)
+        self.view = QTableView(self)
+        self.view.setSelectionBehavior(QTableView.SelectRows)
+        self.view.setSelectionMode(QTableView.SingleSelection)
         # Создадим объект QSqlTableModel,
         # зададим таблицу, с которой он будет работать,
         #  и выберем все данные
-        model = QSqlTableModel(self, db)
-        model.setTable('Employee')
-        model.select()
+        self.model = QSqlTableModel(self, db)
+        self.model.setTable('Employee')
+        self.model.select()
 
         # Для отображения данных на виджете
         # свяжем его и нашу модель данных
-        view.setModel(model)
-        view.move(10, 10)
-        view.resize(617, 315)
+        self.view.setModel(self.model)
+        self.view.move(10, 10)
+        self.view.resize(617, 315)
         self.layout = QVBoxLayout(self)
-        self.pushButton1 = QPushButton("Add")
-        self.layout.addWidget(view)
-        self.layout.addWidget(self.pushButton1)
+        self.layout.addWidget(self.view)
         self.setLayout(self.layout)
+        self.pushButton1 = QPushButton("Добавить")
+        self.layout.addWidget(self.pushButton1)
+        self.pushButton2 = QPushButton("Изменить")
+        self.layout.addWidget(self.pushButton2)
+        self.pushButton3 = QPushButton("Удалить")
+        self.layout.addWidget(self.pushButton3)
+        self.pushButton1.clicked.connect(self.open_emp_form)
+        self.pushButton2.clicked.connect(self.change)
+        self.pushButton3.clicked.connect(self.ddel)
+
+    def open_emp_form(self):
+        self.form1 = Employee.StaffWin(self, self)
+        self.form1.show()
+
+    def change(self):
+        self.form2 = Employee.StaffWin(self, self, self.view.selectionModel().selectedIndexes()[0].data())
+        self.form2.show()
+
+    def updateForm(self):
+        self.model.select()
+
+    def ddel(self):
+        self.con = sqlite3.connect("1.db")
+        cur = self.con.cursor()
+        que = "DELETE FROM Employee WHERE ID = ?"
+        cur.execute(que, (self.view.selectionModel().selectedIndexes()[0].data(),))
+        self.con.commit()
+        self.updateForm()
 
 class RegionWidget(QWidget):
     def __init__(self):
@@ -121,24 +153,51 @@ class RegionWidget(QWidget):
         # И откроем подключение
         db.open()
 
-        view = QTableView(self)
+        self.view = QTableView(self)
         # Создадим объект QSqlTableModel,
         # зададим таблицу, с которой он будет работать,
         #  и выберем все данные
-        model = QSqlTableModel(self, db)
-        model.setTable('Region')
-        model.select()
+        self.model = QSqlTableModel(self, db)
+        self.model.setTable('Region')
+        self.model.select()
 
         # Для отображения данных на виджете
         # свяжем его и нашу модель данных
-        view.setModel(model)
-        view.move(10, 10)
-        view.resize(617, 315)
+        self.view.setModel(self.model)
+        self.view.move(10, 10)
+        self.view.resize(617, 315)
         self.layout = QVBoxLayout(self)
-        self.pushButton1 = QPushButton("Add")
-        self.layout.addWidget(view)
-        self.layout.addWidget(self.pushButton1)
+        self.layout.addWidget(self.view)
         self.setLayout(self.layout)
+        self.pushButton1 = QPushButton("Добавить")
+        self.layout.addWidget(self.pushButton1)
+        self.pushButton2 = QPushButton("Изменить")
+        self.layout.addWidget(self.pushButton2)
+        self.pushButton3 = QPushButton("Удалить")
+        self.layout.addWidget(self.pushButton3)
+        self.pushButton1.clicked.connect(self.open_reg_form)
+        self.pushButton2.clicked.connect(self.change)
+        self.pushButton3.clicked.connect(self.ddel)
+
+    def open_reg_form(self):
+        self.form1 = RegForm.RegFormWin(self, self)
+        self.form1.show()
+
+    def change(self):
+        self.form2 = RegForm.RegFormWin(self, self, self.view.selectionModel().selectedIndexes()[0].data())
+        self.form2.show()
+
+    def updateForm(self):
+        self.model.select()
+
+    def ddel(self):
+        self.con = sqlite3.connect("1.db")
+        cur = self.con.cursor()
+        que = "DELETE FROM Region WHERE Name = ?"
+        cur.execute(que, (self.view.selectionModel().selectedIndexes()[0].data(), ))
+        self.con.commit()
+        self.updateForm()
+
 
 class JobWidget(QWidget):
     def __init__(self):
@@ -175,18 +234,27 @@ class JobWidget(QWidget):
         self.pushButton3 = QPushButton("Удалить")
         self.layout.addWidget(self.pushButton3)
         self.pushButton1.clicked.connect(self.open_second_form)
-        self.pushButton2.clicked.connect(self.z1)
+        self.pushButton2.clicked.connect(self.change)
+        self.pushButton3.clicked.connect(self.ddel)
 
     def open_second_form(self):
         self.form1 = second.SecondWindow(self, self)
         self.form1.show()
 
-    def z1(self):
-        self.form2 = second.SecondWindow(self, self,self.view.selectionModel().selectedIndexes()[0].data())
+    def change(self):
+        self.form2 = second.SecondWindow(self, self, self.view.selectionModel().selectedIndexes()[0].data())
         self.form2.show()
 
-    def w1(self):
+    def updateForm(self):
         self.model.select()
+
+    def ddel(self):
+        self.con = sqlite3.connect("1.db")
+        cur = self.con.cursor()
+        que = "DELETE FROM Job WHERE Name = ?"
+        cur.execute(que, (self.view.selectionModel().selectedIndexes()[0].data(), ))
+        self.con.commit()
+        self.updateForm()
 
 
 

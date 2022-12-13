@@ -4,8 +4,7 @@ import main
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow
 
-
-class SecondWindow(QMainWindow):
+class StaffWin(QMainWindow):
     def __init__(self, *args):
         super().__init__()
         if len(args) > 2:
@@ -14,24 +13,31 @@ class SecondWindow(QMainWindow):
             self.id = -1
         self.m = args[1]
         try:
-            uic.loadUi('JobUi.ui', self)
+            uic.loadUi('Staff.ui', self)
         except Exception as ex:
             print(ex)
-        self.plainTextEdit.setPlainText(str(self.id))
+        # self.textEdit_2.setPlainText(str(self.id))
         self.con = sqlite3.connect("1.db")
         self.pushButton.clicked.connect(self.a1)
+        cur = self.con.cursor()
+        que = "SELECT Name FROM Job"
+        jobs = cur.execute(que, ())
+        self.con.commit()
+        for i in jobs:
+            self.staff.addItem(i[0])
+
     def a1(self):
         try:
             if self.id == -1:
                 cur = self.con.cursor()
-                que = "INSERT INTO Job (Name) VALUES (?)"
-                cur.execute(que, (self.plainTextEdit.toPlainText(),))
+                que = "INSERT INTO Employee (Name) VALUES (?)"
+                cur.execute(que, (self.staff.toPlainText(), self.Name))
                 self.con.commit()
                 self.close()
             else:
                 cur = self.con.cursor()
-                que = "UPDATE Job SET Name = ? WHERE Name = ?"
-                cur.execute(que, (self.plainTextEdit.toPlainText(), self.id))
+                que = "UPDATE Employee SET Name = ? WHERE ID = ?"
+                cur.execute(que, (self.textEdit_2.toPlainText(), self.id))
                 self.con.commit()
                 self.close()
 
@@ -39,6 +45,5 @@ class SecondWindow(QMainWindow):
             print(ex)
 
     def closeEvent(self, evnt):
-        super(SecondWindow, self).closeEvent(evnt)
+        super(StaffWin, self).closeEvent(evnt)
         self.m.updateForm()
-
