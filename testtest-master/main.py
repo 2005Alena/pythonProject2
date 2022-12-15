@@ -127,8 +127,11 @@ class EmployeeWidget(QWidget):
         self.form1.show()
 
     def change(self):
-        self.form2 = Employee.StaffWin(self, self, self.view.selectionModel().selectedIndexes()[0].data())
-        self.form2.show()
+        try:
+            self.form2 = Employee.StaffWin(self, self, self.view.selectionModel().selectedIndexes()[0].data())
+            self.form2.show()
+        except Exception as ex:
+            print(ex)
 
     def updateForm(self):
         self.model.select()

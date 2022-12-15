@@ -16,7 +16,8 @@ class RegFormWin(QMainWindow):
             uic.loadUi('Region.ui', self)
         except Exception as ex:
             print(ex)
-        self.textEdit_2.setPlainText(str(self.id))
+        if self.id != -1:
+            self.textEdit_2.setPlainText(str(self.id))
         self.con = sqlite3.connect("1.db")
         self.pushButton.clicked.connect(self.a1)
 

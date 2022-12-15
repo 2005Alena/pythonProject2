@@ -16,28 +16,40 @@ class StaffWin(QMainWindow):
             uic.loadUi('Staff.ui', self)
         except Exception as ex:
             print(ex)
-        # self.textEdit_2.setPlainText(str(self.id))
         self.con = sqlite3.connect("1.db")
-        self.pushButton.clicked.connect(self.a1)
         cur = self.con.cursor()
-        que = "SELECT Name FROM Job"
+        if self.id != -1:
+            a = 'SELECT * FROM Employee WHERE ID = ?'
+            employee = cur.execute(a, (self.id,))
+            self.name.setPlainText(employee[1])
+            self.surname.setPlainText(employee[2])
+            self.patronymic.setPlainText(employee[3])
+            self.phone.setPlainText(employee[4])
+            self.mail.setPlainText(employee[5])
+            self.staff.setCurrentIndex(employee[6])
+
+        self.pushButton.clicked.connect(self.a1)
+        que = "SELECT Name, id FROM Job "
         jobs = cur.execute(que, ())
         self.con.commit()
         for i in jobs:
-            self.staff.addItem(i[0])
+            self.staff.addItem(i[0], userData=i[1])
 
     def a1(self):
         try:
             if self.id == -1:
                 cur = self.con.cursor()
-                que = "INSERT INTO Employee (Name) VALUES (?)"
-                cur.execute(que, (self.staff.toPlainText(), self.Name))
+                que = "INSERT INTO Employee (Name, Surname, MiddleName, Phone, [E-mail], IDJob) VALUES (?, ?, ?, ?, ?, ?)"
+                cur.execute(que, (self.name.toPlainText(), self.surname.toPlainText(), self.patronymic.toPlainText(), self.phone.toPlainText(), self.mail.toPlainText(), self.staff.itemData(self.staff.currentIndex())))
+                print(self.name.toPlainText(), self.surname.toPlainText(), self.patronymic.toPlainText(), self.phone.toPlainText(), self.mail.toPlainText(), self.staff.currentText(), self.staff.itemData(self.staff.currentIndex()))
                 self.con.commit()
                 self.close()
             else:
                 cur = self.con.cursor()
-                que = "UPDATE Employee SET Name = ? WHERE ID = ?"
-                cur.execute(que, (self.textEdit_2.toPlainText(), self.id))
+                que = "UPDATE Employee SET Name = ?, Surname = ?, MiddleName = ?, Phone = ?, [E-mail] = ?, IDJob = ? WHERE ID = ?"
+                cur.execute(que, (self.name.toPlainText(), self.surname.toPlainText(), self.patronymic.toPlainText(),
+                                  self.phone.toPlainText(), self.mail.toPlainText(),
+                                  self.staff.itemData(self.staff.currentIndex()), self.id))
                 self.con.commit()
                 self.close()
 
