@@ -17,7 +17,8 @@ class SecondWindow(QMainWindow):
             uic.loadUi('JobUi.ui', self)
         except Exception as ex:
             print(ex)
-        self.plainTextEdit.setPlainText(str(self.id))
+        if self.id != -1:
+            self.plainTextEdit.setPlainText(str(self.id))
         self.con = sqlite3.connect("1.db")
         self.pushButton.clicked.connect(self.a1)
     def a1(self):
