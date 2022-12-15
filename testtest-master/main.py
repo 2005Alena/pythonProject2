@@ -117,8 +117,8 @@ class EmployeeWidget(QWidget):
         db.open()
 
         self.view = QTableView(self)
-       # self.view.setSelectionBehavior(QTableView.SelectRows)
-       # self.view.setSelectionMode(QTableView.SingleSelection)
+        self.view.setSelectionBehavior(QTableView.SelectRows)
+        self.view.setSelectionMode(QTableView.SingleSelection)
         # Создадим объект QSqlTableModel,
         # зададим таблицу, с которой он будет работать,
         #  и выберем все данные
