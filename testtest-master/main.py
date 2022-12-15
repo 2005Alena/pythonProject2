@@ -59,6 +59,8 @@ class HotelWidget(QWidget):
         db.open()
 
         self.view = QTableView(self)
+        self.view.setSelectionBehavior(QTableView.SelectRows)
+        self.view.setSelectionMode(QTableView.SingleSelection)
         # Создадим объект QSqlTableModel,
         # зададим таблицу, с которой он будет работать,
         #  и выберем все данные
@@ -98,7 +100,7 @@ class HotelWidget(QWidget):
     def ddel(self):
         self.con = sqlite3.connect("1.db")
         cur = self.con.cursor()
-        que = "DELETE FROM Hotel WHERE Name = ?"
+        que = "DELETE FROM Hotel WHERE ID = ?"
         cur.execute(que, (self.view.selectionModel().selectedIndexes()[0].data(),))
         self.con.commit()
         self.updateForm()
