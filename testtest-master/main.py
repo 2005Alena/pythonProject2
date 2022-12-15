@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAc
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
-import second, RegForm, sqlite3, Employee
+import second, RegForm, sqlite3, Employee, Hotel
 
 
 class App(QMainWindow):
@@ -58,21 +58,21 @@ class HotelWidget(QWidget):
         # И откроем подключение
         db.open()
 
-        view = QTableView(self)
+        self.view = QTableView(self)
         # Создадим объект QSqlTableModel,
         # зададим таблицу, с которой он будет работать,
         #  и выберем все данные
-        model = QSqlTableModel(self, db)
-        model.setTable('Hotel')
-        model.select()
+        self.model = QSqlTableModel(self, db)
+        self.model.setTable('Hotel')
+        self.model.select()
 
         # Для отображения данных на виджете
         # свяжем его и нашу модель данных
-        view.setModel(model)
-        view.move(10, 10)
-        view.resize(617, 315)
+        self.view.setModel(self.model)
+        self.view.move(10, 10)
+        self.view.resize(617, 315)
         self.layout = QVBoxLayout(self)
-        self.layout.addWidget(view)
+        self.layout.addWidget(self.view)
         self.setLayout(self.layout)
         self.pushButton1 = QPushButton("Добавить")
         self.layout.addWidget(self.pushButton1)
@@ -80,6 +80,28 @@ class HotelWidget(QWidget):
         self.layout.addWidget(self.pushButton2)
         self.pushButton3 = QPushButton("Удалить")
         self.layout.addWidget(self.pushButton3)
+        self.pushButton1.clicked.connect(self.open_hot_form)
+        self.pushButton2.clicked.connect(self.change)
+        self.pushButton3.clicked.connect(self.ddel)
+
+    def open_hot_form(self):
+        self.form1 = Hotel.HotWin(self, self)
+        self.form1.show()
+
+    def change(self):
+        self.form2 = Hotel.HotWin(self, self, self.view.selectionModel().selectedIndexes()[0].data())
+        self.form2.show()
+
+    def updateForm(self):
+        self.model.select()
+
+    def ddel(self):
+        self.con = sqlite3.connect("1.db")
+        cur = self.con.cursor()
+        que = "DELETE FROM Hotel WHERE Name = ?"
+        cur.execute(que, (self.view.selectionModel().selectedIndexes()[0].data(),))
+        self.con.commit()
+        self.updateForm()
 
 
 class EmployeeWidget(QWidget):
