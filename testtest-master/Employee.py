@@ -20,7 +20,7 @@ class StaffWin(QMainWindow):
         cur = self.con.cursor()
         if self.id != -1:
             a = 'SELECT * FROM Employee WHERE ID = ?'
-            employee = cur.execute(a, (self.id,))
+            employee = list(cur.execute(a, (self.id,)))[0]
             self.name.setPlainText(employee[1])
             self.surname.setPlainText(employee[2])
             self.patronymic.setPlainText(employee[3])
@@ -41,7 +41,7 @@ class StaffWin(QMainWindow):
                 cur = self.con.cursor()
                 que = "INSERT INTO Employee (Name, Surname, MiddleName, Phone, [E-mail], IDJob) VALUES (?, ?, ?, ?, ?, ?)"
                 cur.execute(que, (self.name.toPlainText(), self.surname.toPlainText(), self.patronymic.toPlainText(), self.phone.toPlainText(), self.mail.toPlainText(), self.staff.itemData(self.staff.currentIndex())))
-                print(self.name.toPlainText(), self.surname.toPlainText(), self.patronymic.toPlainText(), self.phone.toPlainText(), self.mail.toPlainText(), self.staff.currentText(), self.staff.itemData(self.staff.currentIndex()))
+
                 self.con.commit()
                 self.close()
             else:

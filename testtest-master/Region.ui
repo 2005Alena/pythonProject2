@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>956</width>
-    <height>357</height>
+    <width>1173</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="cursor">
@@ -72,7 +72,7 @@
      <string notr="true">background-color: rgb(255, 255, 255)</string>
     </property>
     <property name="text">
-     <string>Введите название:</string>
+     <string>Название:</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -84,8 +84,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>956</width>
-     <height>21</height>
+     <width>1173</width>
+     <height>18</height>
     </rect>
    </property>
   </widget>
